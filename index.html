@@ -5,52 +5,128 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>نور - تطبيق إسلامي</title>
 
-  <!-- React -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <style>
-    body{margin:0;background:#0A0E0D;color:white;font-family:sans-serif}
-  </style>
 </head>
 
-<body>
+<body style="margin:0;background:#0A0E0D">
 <div id="root"></div>
 
 <script type="text/babel">
 
-/* 🔥 مهم جداً — هذا كان سبب الشاشة السوداء */
+/* ✅ إصلاح المشكلة الرئيسية */
 const { useState, useEffect } = React;
 
-/* =================== مثال مبسّط للتأكد أنه يعمل =================== */
-/* يمكنك لاحقاً إرجاع مشروعك الكامل بعد التأكد أن هذه النسخة تعمل */
+/* ==================== DATA ==================== */
+const SURAHS = [
+  { id: 1, name: "الفاتحة", english: "Al-Fatiha", ayahs: 7, page: 1, juz: 1 },
+  { id: 112, name: "الإخلاص", english: "Al-Ikhlas", ayahs: 4, page: 604, juz: 30 },
+  { id: 113, name: "الفلق", english: "Al-Falaq", ayahs: 5, page: 604, juz: 30 },
+  { id: 114, name: "الناس", english: "An-Nas", ayahs: 6, page: 604, juz: 30 },
+];
 
-function App() {
-  const [count, setCount] = useState(0);
+const QURAN_AYAHS = {
+  1: [
+    { number: 1, text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ" },
+    { number: 2, text: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ" },
+    { number: 3, text: "الرَّحْمَٰنِ الرَّحِيمِ" },
+    { number: 4, text: "مَالِكِ يَوْمِ الدِّينِ" },
+    { number: 5, text: "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ" },
+    { number: 6, text: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ" },
+    { number: 7, text: "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ" },
+  ],
+  112: [
+    { number: 1, text: "قُلْ هُوَ اللَّهُ أَحَدٌ" },
+    { number: 2, text: "اللَّهُ الصَّمَدُ" },
+    { number: 3, text: "لَمْ يَلِدْ وَلَمْ يُولَدْ" },
+    { number: 4, text: "وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ" },
+  ],
+  113: [
+    { number: 1, text: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ" },
+    { number: 2, text: "مِن شَرِّ مَا خَلَقَ" },
+    { number: 3, text: "وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ" },
+    { number: 4, text: "وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ" },
+    { number: 5, text: "وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ" },
+  ],
+  114: [
+    { number: 1, text: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ" },
+    { number: 2, text: "مَلِكِ النَّاسِ" },
+    { number: 3, text: "إِلَٰهِ النَّاسِ" },
+    { number: 4, text: "مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ" },
+    { number: 5, text: "الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ" },
+    { number: 6, text: "مِنَ الْجِنَّةِ وَالنَّاسِ" },
+  ],
+};
 
+/* ==================== HOME ==================== */
+function HomeScreen({ setScreen }) {
   return (
-    <div style={{padding:40,textAlign:"center"}}>
-      <h1>تطبيق نور يعمل بنجاح ✅</h1>
-      <p>إذا ترى هذا فـ GitHub Pages يعمل 100%</p>
-
-      <button 
-        onClick={() => setCount(count + 1)}
-        style={{
-          padding:"12px 20px",
-          fontSize:18,
-          background:"#C9A84C",
-          border:"none",
-          borderRadius:8,
-          cursor:"pointer"
-        }}
-      >
-        عداد: {count}
+    <div style={{padding:40,textAlign:"center",color:"#fff"}}>
+      <h1>السلام عليكم 🌙</h1>
+      <p>أهلاً بك في تطبيق نور</p>
+      <button onClick={()=>setScreen("quran")} style={btnStyle}>
+        📖 دخول القرآن
       </button>
     </div>
   );
 }
 
+/* ==================== QURAN ==================== */
+function QuranScreen({ setScreen }) {
+  const [selected, setSelected] = useState(null);
+
+  if (selected) {
+    const ayahs = QURAN_AYAHS[selected.id] || [];
+    return (
+      <div style={{padding:20,color:"#fff"}}>
+        <button onClick={()=>setSelected(null)} style={btnStyle}>⬅ رجوع</button>
+        <h2>{selected.name}</h2>
+        {ayahs.map(a=>(
+          <p key={a.number} style={{fontSize:22,lineHeight:2}}>
+            {a.text} ({a.number})
+          </p>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{padding:20,color:"#fff"}}>
+      <button onClick={()=>setScreen("home")} style={btnStyle}>⬅ الرئيسية</button>
+      <h2>القرآن الكريم</h2>
+      {SURAHS.map(s=>(
+        <div key={s.id} onClick={()=>setSelected(s)}
+          style={{padding:12,margin:"10px 0",background:"#1a1a1a",cursor:"pointer"}}>
+          {s.name}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const btnStyle={
+  padding:"10px 18px",
+  margin:"10px",
+  background:"#C9A84C",
+  border:"none",
+  borderRadius:8,
+  cursor:"pointer"
+};
+
+/* ==================== APP ==================== */
+function App() {
+  const [screen,setScreen]=useState("home");
+
+  return (
+    <>
+      {screen==="home" && <HomeScreen setScreen={setScreen}/>}
+      {screen==="quran" && <QuranScreen setScreen={setScreen}/>}
+    </>
+  );
+}
+
+/* ==================== RENDER ==================== */
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
 
